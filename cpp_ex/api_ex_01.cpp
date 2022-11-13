@@ -17,20 +17,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	WndClass.cbClsExtra = 0; //클래스를 위한 여분의 메모리를 사용하지 않음
 	WndClass.cbWndExtra = 0; //윈도우를 위한 여분의 메모리를 사용하지 않음
 	WndClass.hInstance = hInstance; //WinMain  첫번째 매개변수
-	WndClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);  //아이콘
-	WndClass.hCursor = LoadCursor(NULL, IDC_ARROW); //커서
-	WndClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //바탕색은 흰색으로 설정
+	WndClass.hIcon = LoadIcon(NULL, IDI_QUESTION);  //아이콘은 물음표료 변경
+	WndClass.hCursor = LoadCursor(NULL, IDC_IBEAM); //커서를 아이빔(대문자 I)로 변경
+	WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); //바탕색은 검정으로 변경
 	WndClass.lpszMenuName = NULL; //메뉴 사용 안함
 	WndClass.lpszClassName = _T("Window Class Name"); 
 	RegisterClass(&WndClass); //커널에 등록한다.
 	hwnd = CreateWindow(
 				_T("Window Class Name"),  //윈도우 클래스 이름(유니 코드로 변환 하기 위해 _T 붙임)
-				_T("Window Titel Name"), //윈도우 타이틀 이름(유니 코드로 변환 하기 위해 _T 붙임)
+				_T("김재벌의 첫 번째 윈도우"), //윈도우 타이틀 이름(유니 코드로 변환 하기 위해 _T 붙임)
 				WS_OVERLAPPEDWINDOW, //윈도우 스타일(최소, 최대화, 닫기 버튼)
-				CW_USEDEFAULT, //윈도우 위치 x 좌표
-				CW_USEDEFAULT, //윈도우 위치 y 좌표
-				CW_USEDEFAULT, //윈도우 가로 크기
-				CW_USEDEFAULT, //윈도우 세로 크기
+				200, //윈도우 위치 x 좌표(200), 기본을 쓰려면 CW_USEDEFAULT 를 쓴다.
+				300, //윈도우 위치 y 좌표(300)
+				600, //윈도우 가로 크기(600)
+				400, //윈도우 세로 크기(400)
 				NULL, //부모 윈도우 핸들
 				NULL, //메뉴 핸들
 				hInstance, //응용 프로그램 인스턴스
