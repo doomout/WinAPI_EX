@@ -54,16 +54,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 //메세지 처리 부분, 콜백 함수 명시
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	switch (iMsg)  //메시지 번호
+	HDC hdc;
+	PAINTSTRUCT ps;
+	RECT rect;
+
+	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
-	case WM_CREATE: //메시지에 따른 처리
+	case WM_CREATE: //윈도우 창 시작시 사용
 		break;
-	case WM_DESTROY :
-		PostQuitMessage(0);
+
+	case WM_PAINT: //윈도우 창 출력시 사용
+		hdc = BeginPaint(hwnd, &ps);
+		// 박스 좌표 지정
+		rect.left = 50;
+		rect.top = 40;
+		rect.right = 600;
+		rect.bottom = 320;
+		//텍스트 출력 함수(화면영역 변수 | 출력할 문자열 | 문자열 길이 | 박스 영역의 좌표가 저장된 주소값, 영어 어느 위치에 출력할지 알려줄 값)
+		DrawText(hdc, _T("HelloWord"), 10, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+		//문자열 출력 함수 (화면영역 | x 좌표 | y 좌표 | 출력할 텍스트 문자열, 멀티바이트, 유니코드 다 사용할 수 있는 _tcslen() 함수 사용)
+		TextOut(hdc, 100, 100, _T("Hello 안녕"), _tcslen(_T("Hello 안녕")));
+		EndPaint(hwnd, &ps);
+		break;
+	case WM_DESTROY : //윈도우 창 종료시 사용
+		PostQuitMessage(0);  //반복 종료를 위해 0 반환
 		break;
 	default:
 		break;
-	}// 처리할 메시지만 case에 나열
+	}
 
 	//나머지는 커널이 처리하도록 메시지 전달
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
