@@ -2,10 +2,6 @@
 #include <TCHAR.H>
 //콜백 함수 선언
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-//박스 안 문자열 출력 함수
-wchar_t t_DrawText(HDC hdc);
-//문자열 출력 함수
-wchar_t t_TextOut(HDC hdc);
 
 //메인 부분 
 //hInstance : 운영체제의 커널이 응용 프로그램에 부여한 ID로 메모리에서의 위치
