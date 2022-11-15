@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	WndClass.hInstance = hInstance; //WinMain  첫번째 매개변수
 	WndClass.hIcon = LoadIcon(NULL, IDI_QUESTION);  //아이콘은 물음표료 변경
 	WndClass.hCursor = LoadCursor(NULL, IDC_IBEAM); //커서를 아이빔(대문자 I)로 변경
-	WndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH); //바탕색은 검정으로 변경
+	WndClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //바탕색은 흰색으로 변경
 	WndClass.lpszMenuName = NULL; //메뉴 사용 안함
 	WndClass.lpszClassName = _T("Window Class Name"); 
 	RegisterClass(&WndClass); //커널에 등록한다.
@@ -51,13 +51,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	}
 	return (int)msg.wParam;
 }
-//메세지 처리 부분, 콜백 함수 명시
+/*
+   10행까지 입력 받을 수 있는 메모장 구현
+   1행에는 최대 20자까지 들어가고 최대 10행까지 입력 받을 수 있음
+*/
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	static TCHAR str[100];
-	static int count, yPos;
+	static TCHAR str[10][20]; //문자열을 저장할 공간(최대 20글자, 10줄)
+	static int count, yPos; //문자열, y축
+	
 	RECT rt = { 0, 0, 1000, 1000 };
 	static SIZE size;
 	 
@@ -66,31 +70,50 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE: //윈도우 창 시작시 사용
 		CreateCaret(hwnd, NULL, 5, 15); 
 		ShowCaret(hwnd);
+		yPos = 0;
 		count = 0;
 		break;	
 
-	case WM_PAINT: //윈도우 창 출력시 사용
+	case WM_PAINT: //윈도우 창 출력
 		hdc = BeginPaint(hwnd, &ps);
-		GetTextExtentPoint(hdc, str, _tcslen(str), &size);
-		TextOut(hdc, 0, 0, str, _tcslen(str)); //한줄 입력
-		//DrawText(hdc, str, _tcslen(str), &rt, DT_TOP | DT_LEFT); //여러줄 입력
-		SetCaretPos(size.cx, 0);
+		for (int i = 0; i < yPos+1; i++)
+		{
+			GetTextExtentPoint(hdc, str[i], _tcslen(str[i]), &size); //출력할 화면 | 크기를 측정하는 문자열 | 몇 번째 문자까지 크기를 측정할지 | 문자열 폭
+			TextOut(hdc, 0, i*20, str[i], _tcslen(str[i])); //  i* 20으로 y축
+			SetCaretPos(size.cx, i*20); //커서 자리값
+		}
 		EndPaint(hwnd, &ps);
 		break;
 
-	case WM_CHAR: //키보드 입력시 사용
-		if (wParam == VK_BACK && count > 0) //백스페이스를 사용하면 삭제(VK_BACK)
+	case WM_CHAR: //키보드 입력
+		if (count > 20) //한줄에 20자이상 못침
+		{
 			count--;
-		else
-			str[count++] = wParam;
-			
-		str[count] = NULL; //문자열의 끝
+		}
+		else if ((wParam == VK_BACK) && (count > 0)) //문자가 0개 이상있고, 백스페이스를 사용하면 삭제(VK_BACK)
+		{
+			count--;
+		}
+		else if (wParam == VK_RETURN) //엔터를 치면~
+		{
+			if (yPos < 9) //10 줄까지만  허용
+			{
+				count = 0;
+				yPos++; //y축이 증가하여 한칸 내려감
+			}
+		}
+		else //엔터, 백스페이스 제외한 나머지 키 쳤을 때
+			str[yPos][count++] = wParam;
+	
+
+		str[yPos][count] = '\0'; //문자열의 끝
+
 		InvalidateRgn(hwnd, NULL, TRUE); //화면 영역 수정 함수
 		break;
 
 	case WM_DESTROY : //윈도우 창 종료시 사용
 		HideCaret(hwnd); //캐럿 삭제
-		DestroyCaret(); //
+		DestroyCaret(); 
 		PostQuitMessage(0);  //반복 종료를 위해 0 반환
 		break;
 	default:
