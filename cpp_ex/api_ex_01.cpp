@@ -2,6 +2,10 @@
 #include <TCHAR.H>
 //콜백 함수 선언
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
+//박스 안 문자열 출력 함수
+wchar_t t_DrawText(HDC hdc);
+//문자열 출력 함수
+wchar_t t_TextOut(HDC hdc);
 
 //메인 부분 
 //hInstance : 운영체제의 커널이 응용 프로그램에 부여한 ID로 메모리에서의 위치
@@ -56,26 +60,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	RECT rect;
-
+	static TCHAR str[100];
+	static int count, yPos;
+	RECT rt = { 0, 0, 1000, 1000 };
+	 
 	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
 	case WM_CREATE: //윈도우 창 시작시 사용
-		break;
+		count = 0;
+		break;	
 
 	case WM_PAINT: //윈도우 창 출력시 사용
 		hdc = BeginPaint(hwnd, &ps);
-		// 박스 좌표 지정
-		rect.left = 50;
-		rect.top = 40;
-		rect.right = 600;
-		rect.bottom = 320;
-		//텍스트 출력 함수(화면영역 변수 | 출력할 문자열 | 문자열 길이 | 박스 영역의 좌표가 저장된 주소값, 영어 어느 위치에 출력할지 알려줄 값)
-		DrawText(hdc, _T("HelloWord"), 10, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
-		//문자열 출력 함수 (화면영역 | x 좌표 | y 좌표 | 출력할 텍스트 문자열, 멀티바이트, 유니코드 다 사용할 수 있는 _tcslen() 함수 사용)
-		TextOut(hdc, 100, 100, _T("Hello 안녕"), _tcslen(_T("Hello 안녕")));
+		DrawText(hdc, str, _tcslen(str), &rt, DT_TOP | DT_LEFT);
+
+		//t_DrawText(hdc); //박스 안 문자열 출력 함수
+		//t_TextOut(hdc); //문자열 출력 함수
 		EndPaint(hwnd, &ps);
 		break;
+
+	case WM_CHAR: //키보드 입력시 사용
+		if (wParam == VK_BACK && count > 0) //백스페이스를 사용하면 삭제(VK_BACK)
+			count--;
+		else
+			str[count++] = wParam;
+			
+		str[count] = NULL;
+		InvalidateRgn(hwnd, NULL, TRUE); //화면 영역 수정 함수
+		break;
+
 	case WM_DESTROY : //윈도우 창 종료시 사용
 		PostQuitMessage(0);  //반복 종료를 위해 0 반환
 		break;
@@ -85,4 +98,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	//나머지는 커널이 처리하도록 메시지 전달
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
+}
+
+wchar_t t_TextOut(HDC hdc)
+{
+	//문자열 출력 함수 (화면영역 | x 좌표 | y 좌표 | 출력할 텍스트 문자열, 멀티바이트, 유니코드 다 사용할 수 있는 _tcslen() 함수 사용)
+	return TextOut(hdc, 100, 100, _T("Hello 안녕"), _tcslen(_T("Hello 안녕")));
+}
+
+wchar_t t_DrawText(HDC hdc)
+{
+	RECT rect;
+	// 박스 좌표 지정
+	rect.left = 50;
+	rect.top = 40;
+	rect.right = 600;
+	rect.bottom = 320;
+	//텍스트 출력 함수(화면영역 변수 | 출력할 문자열 | 문자열 길이 | 박스 영역의 좌표가 저장된 주소값, 영어 어느 위치에 출력할지 알려줄 값)
+	return DrawText(hdc, _T("HelloWord"), 10, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 }
