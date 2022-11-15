@@ -63,19 +63,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	static TCHAR str[100];
 	static int count, yPos;
 	RECT rt = { 0, 0, 1000, 1000 };
+	static SIZE size;
 	 
 	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
 	case WM_CREATE: //윈도우 창 시작시 사용
+		CreateCaret(hwnd, NULL, 5, 15); 
+		ShowCaret(hwnd);
 		count = 0;
 		break;	
 
 	case WM_PAINT: //윈도우 창 출력시 사용
 		hdc = BeginPaint(hwnd, &ps);
-		DrawText(hdc, str, _tcslen(str), &rt, DT_TOP | DT_LEFT);
-
-		//t_DrawText(hdc); //박스 안 문자열 출력 함수
-		//t_TextOut(hdc); //문자열 출력 함수
+		GetTextExtentPoint(hdc, str, _tcslen(str), &size);
+		TextOut(hdc, 0, 0, str, _tcslen(str)); //한줄 입력
+		//DrawText(hdc, str, _tcslen(str), &rt, DT_TOP | DT_LEFT); //여러줄 입력
+		SetCaretPos(size.cx, 0);
 		EndPaint(hwnd, &ps);
 		break;
 
@@ -85,11 +88,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		else
 			str[count++] = wParam;
 			
-		str[count] = NULL;
+		str[count] = NULL; //문자열의 끝
 		InvalidateRgn(hwnd, NULL, TRUE); //화면 영역 수정 함수
 		break;
 
 	case WM_DESTROY : //윈도우 창 종료시 사용
+		HideCaret(hwnd); //캐럿 삭제
+		DestroyCaret(); //
 		PostQuitMessage(0);  //반복 종료를 위해 0 반환
 		break;
 	default:
@@ -98,22 +103,4 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	//나머지는 커널이 처리하도록 메시지 전달
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
-}
-
-wchar_t t_TextOut(HDC hdc)
-{
-	//문자열 출력 함수 (화면영역 | x 좌표 | y 좌표 | 출력할 텍스트 문자열, 멀티바이트, 유니코드 다 사용할 수 있는 _tcslen() 함수 사용)
-	return TextOut(hdc, 100, 100, _T("Hello 안녕"), _tcslen(_T("Hello 안녕")));
-}
-
-wchar_t t_DrawText(HDC hdc)
-{
-	RECT rect;
-	// 박스 좌표 지정
-	rect.left = 50;
-	rect.top = 40;
-	rect.right = 600;
-	rect.bottom = 320;
-	//텍스트 출력 함수(화면영역 변수 | 출력할 문자열 | 문자열 길이 | 박스 영역의 좌표가 저장된 주소값, 영어 어느 위치에 출력할지 알려줄 값)
-	return DrawText(hdc, _T("HelloWord"), 10, &rect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 }

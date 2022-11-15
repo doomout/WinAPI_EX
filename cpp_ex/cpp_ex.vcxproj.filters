@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="api_ex_01.cpp">
+    <ClCompile Include="api_ex_01_Text.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
