@@ -56,6 +56,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
+	POINT point[10] = {
+		{10, 150}, {250, 30}, {500, 150}, {350, 300}, {150, 300}
+	};
+	HPEN hPen, oldPen; //펜 핸들 변수
+	HBRUSH hBrush, oldBrush;
 
 	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
@@ -64,7 +69,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_PAINT: //윈도우 창 출력시 사용
 		hdc = BeginPaint(hwnd, &ps);
-		Ellipse(hdc, 0, 0, 40, 40); // 원 그리기
+		hPen = CreatePen(PS_DOT, 1, RGB(255, 0, 0)); //펜 생성(선 종류 | 굵기 | 색상)
+		oldPen = (HPEN)SelectObject(hdc, hPen); //펜을 hdc에 등록
+
+		hBrush = CreateSolidBrush(RGB(255, 255, 0)); //브러쉬 생성 (노랑)
+		oldBrush = (HBRUSH)SelectObject(hdc, hBrush); //디비아스 콘텍스트(hdc)에 빨간색 브러쉬 등록
+
+		Polygon(hdc, point, 5); //화면 영역 | 꼭짓점 좌표 | 꼭짓점 개수
+		SelectObject(hdc, oldPen); //다각형 그리기 마치면 펜 핸들을 다시 등록
+		DeleteObject(hPen); //펜 삭제
+
+		Ellipse(hdc, 0, 0, 50, 50); // 원 그리기
+		SelectObject(hdc, oldBrush);  //oldBrush 를 등록하고
+		DeleteObject(hBrush); //hBrush 삭제
+		
+		Rectangle(hdc, 50, 50, 100, 100); //정 사각형 그리기 (x1, y1, x2, y2)
 		EndPaint(hwnd, &ps);
 		break;
 
