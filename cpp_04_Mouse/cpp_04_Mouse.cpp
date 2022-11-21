@@ -103,6 +103,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		InvalidateRgn(hwnd, NULL, TRUE);
 		break;
 
+	case WM_MOUSEMOVE:
+		mx = LOWORD(lParam);
+		my = HIWORD(lParam);
+		if (Selection)
+		{
+			x = mx;
+			y = my;
+			InvalidateRgn(hwnd, NULL, TRUE);
+		}
+		break;
+
 	case WM_DESTROY: //윈도우 창 종료시 사용
 		PostQuitMessage(0);  //반복 종료를 위해 0 반환
 		break;
