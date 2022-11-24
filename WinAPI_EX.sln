@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_04_Mouse", "cpp_04_Mous
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_05_Line", "cpp_05_Line\cpp_05_Line.vcxproj", "{35A15815-1FD7-4627-B9C1-9E324D9EE318}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_06_Circle", "cpp_06_Circle\cpp_06_Circle.vcxproj", "{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -61,6 +63,14 @@ Global
 		{35A15815-1FD7-4627-B9C1-9E324D9EE318}.Release|x64.Build.0 = Release|x64
 		{35A15815-1FD7-4627-B9C1-9E324D9EE318}.Release|x86.ActiveCfg = Release|Win32
 		{35A15815-1FD7-4627-B9C1-9E324D9EE318}.Release|x86.Build.0 = Release|Win32
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Debug|x64.ActiveCfg = Debug|x64
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Debug|x64.Build.0 = Debug|x64
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Debug|x86.ActiveCfg = Debug|Win32
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Debug|x86.Build.0 = Debug|Win32
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Release|x64.ActiveCfg = Release|x64
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Release|x64.Build.0 = Release|x64
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Release|x86.ActiveCfg = Release|Win32
+		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
