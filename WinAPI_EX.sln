@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_05_Line", "cpp_05_Line\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_06_Circle", "cpp_06_Circle\cpp_06_Circle.vcxproj", "{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_07_Menu", "cpp_07_Menu\cpp_07_Menu.vcxproj", "{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -71,6 +73,14 @@ Global
 		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Release|x64.Build.0 = Release|x64
 		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Release|x86.ActiveCfg = Release|Win32
 		{E7282555-D0EB-41AD-8A17-71EDB5ADDB64}.Release|x86.Build.0 = Release|Win32
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Debug|x64.ActiveCfg = Debug|x64
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Debug|x64.Build.0 = Debug|x64
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Debug|x86.ActiveCfg = Debug|Win32
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Debug|x86.Build.0 = Debug|Win32
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Release|x64.ActiveCfg = Release|x64
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Release|x64.Build.0 = Release|x64
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Release|x86.ActiveCfg = Release|Win32
+		{63C4786B-8E1A-44F4-9A7C-0AA1AE7B9BCF}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
