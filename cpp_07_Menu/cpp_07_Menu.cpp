@@ -2,6 +2,7 @@
 #include <TCHAR.H>
 #include <math.h>
 #include  "resource.h"
+#include <stdio.h>
 
 //콜백 함수 선언
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -55,11 +56,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 	}
 	return (int)msg.wParam;
 }
+void OutFromFile(TCHAR filename[], HWND hwnd)
+{
+	FILE *fPtr;
+	HDC hdc;
+	int line;
+	TCHAR buffer[500];
+	line = 0;
+	hdc = GetDC(hwnd);
+#ifdef _UNICODE
+	_tfopen_s(&fPtr, filename, _T("r, ccs=UNICODE"));
+#else
+	_tfopen_s(&fPtr, filename, _T("r"));
+#endif
+	while (_fgetts(buffer, 100, fPtr) != NULL)
+	{
+		if (buffer[_tcslen(buffer)-1] == _T('\n'))
+		{
+			buffer[_tcslen(buffer) - 1] = NULL;
+		}
+		TextOut(hdc, 0, line * 20, buffer, _tcslen(buffer));
+		line++;
+	}
+	fclose(fPtr);
+	ReleaseDC(hwnd, hdc);
+}
+
 //메세지 처리 부분, 콜백 함수 명시
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	int answer;
 	OPENFILENAME OFN;
+	OPENFILENAME SFN;
 	TCHAR str[100], lpstrFile[100] = _T(""); //파일 경로 저장을 위한 배열
 	TCHAR filter[] = _T("전체 파일(*.*) \0*.*\0Text File\0*.txt; *.doc\0");
 
@@ -85,8 +113,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			OFN.lpstrInitialDir = _T(".");
 			if (GetOpenFileName(&OFN) != 0)
 			{
-				_stprintf_s(str, _T("%s 파일을 열겠습니까?"), OFN.lpstrFile);
-				MessageBox(hwnd, str, _T("열기 선택"), MB_OK);
+				OutFromFile(OFN.lpstrFile, hwnd);
+				//_stprintf_s(str, _T("%s 파일을 열겠습니까?"), OFN.lpstrFile);
+				//MessageBox(hwnd, str, _T("열기 선택"), MB_OK);
+			}
+			break;
+
+		case ID_FILESAVE:
+			memset(&SFN, 0, sizeof(OPENFILENAME));
+			SFN.lStructSize = sizeof(OPENFILENAME);
+			SFN.hwndOwner = hwnd;
+			SFN.lpstrFilter = filter;
+			SFN.lpstrFile = lpstrFile;
+			SFN.nMaxFile = 256;
+			SFN.lpstrInitialDir = _T(".");
+			if (GetSaveFileName(&SFN) != 0)
+			{
+				_stprintf_s(str, _T("%s 파일로 저장하겠습니까?"), SFN.lpstrFile);
+				MessageBox(hwnd, str, _T("저장하기 선택"), MB_OK);
 			}
 			break;
 
