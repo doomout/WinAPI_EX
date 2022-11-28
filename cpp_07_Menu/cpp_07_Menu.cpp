@@ -88,12 +88,46 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	int answer;
 	OPENFILENAME OFN;
 	OPENFILENAME SFN;
+	HDC hdc;
+	PAINTSTRUCT ps;
+
 	TCHAR str[100], lpstrFile[100] = _T(""); //파일 경로 저장을 위한 배열
 	TCHAR filter[] = _T("전체 파일(*.*) \0*.*\0Text File\0*.txt; *.doc\0");
+	
+	CHOOSEFONT FONT; //폰트 선택
+	static COLORREF  fColor; //폰트 색
+	HFONT hFont, OldFont;
+	static LOGFONT LogFont;
+
+	CHOOSECOLOR COLOR;
+	static COLORREF tmp[16], color;
+	HBRUSH hBrush, OldBrush;
+	int i;
 
 	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
 	case WM_CREATE: //윈도우 창 시작시 사용
+		break;
+
+	case WM_PAINT:
+		hdc = BeginPaint(hwnd, &ps);
+		
+		//폰트 관련 부분
+		hFont = CreateFontIndirect(&LogFont);
+		OldFont = (HFONT)SelectObject(hdc, hFont);
+		SetTextColor(hdc, fColor);
+		TextOut(hdc, 10, 10, _T("HelloWorld"), 10);
+		SelectObject(hdc, OldFont);
+		DeleteObject(hFont);
+
+		//색상 관련 부분
+		hBrush = CreateSolidBrush(color);
+		OldBrush = (HBRUSH)SelectObject(hdc, hBrush);
+		Ellipse(hdc, 30, 50, 200, 200); //원 위치, 크기
+		SelectObject(hdc, OldBrush);
+		DeleteObject(hBrush);
+
+		EndPaint(hwnd, &ps);
 		break;
 
 	case WM_COMMAND: //메뉴 항목 선택시 사용
@@ -102,7 +136,35 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case ID_FILENEW: //새 파일
 			MessageBox(hwnd,  _T("새 파일을 열겠습니까?"),  _T("새 파일 선택"),  MB_OKCANCEL);
 			break;
-		
+
+		case ID_COLORDLG: //색상 설정하기
+			for (i = 0; i < 16; i++)
+				tmp[i] = RGB(rand()%256, rand()%256, rand()%256);
+			memset(&COLOR, 0, sizeof(CHOOSECOLOR));
+			COLOR.lStructSize = sizeof(CHOOSECOLOR);
+			COLOR.hwndOwner = hwnd;
+			COLOR.lpCustColors = tmp;
+			COLOR.Flags = CC_FULLOPEN;
+			if (ChooseColor(&COLOR) != 0)
+			{
+				color = COLOR.rgbResult;
+				InvalidateRgn(hwnd, NULL, TRUE);
+			}
+			break;
+
+		case ID_FONTDLG: //폰트 설정하기
+			memset(&FONT, 0, sizeof(CHOOSEFONT));
+			FONT.lStructSize = sizeof(CHOOSEFONT);
+			FONT.hwndOwner = hwnd;
+			FONT.lpLogFont = &LogFont;
+			FONT.Flags = CF_EFFECTS | CF_SCREENFONTS;
+			if (ChooseFont(&FONT) != 0)
+			{
+				fColor = FONT.rgbColors;
+				InvalidateRgn(hwnd, NULL, TRUE);
+			}
+			break;
+
 		case ID_FILEOPEN: //파일 열기
 			memset(&OFN, 0, sizeof(OPENFILENAME));
 			OFN.lStructSize = sizeof(OPENFILENAME);
@@ -114,8 +176,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			if (GetOpenFileName(&OFN) != 0)
 			{
 				OutFromFile(OFN.lpstrFile, hwnd);
-				//_stprintf_s(str, _T("%s 파일을 열겠습니까?"), OFN.lpstrFile);
-				//MessageBox(hwnd, str, _T("열기 선택"), MB_OK);
 			}
 			break;
 
@@ -142,11 +202,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
+		break;
 
 	case WM_DESTROY: //윈도우 창 종료시 사용
 		PostQuitMessage(0);  //반복 종료를 위해 0 반환
-		break;
-	default:
 		break;
 	}
 
