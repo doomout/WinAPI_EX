@@ -3,6 +3,17 @@
 #include <math.h>
 #include  "resource.h"
 #include <stdio.h>
+#define BSIZE 40
+double LengthPts(int x1, int y1, int x2, int y2)
+{
+	return(sqrt((float)((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))));
+}
+
+BOOL InCircle(int x, int y, int mx, int my)
+{
+	if (LengthPts(x, y, mx, my) < BSIZE) return TRUE;
+	else return FALSE;
+}
 
 //콜백 함수 선언
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -94,22 +105,41 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	TCHAR str[100], lpstrFile[100] = _T(""); //파일 경로 저장을 위한 배열
 	TCHAR filter[] = _T("전체 파일(*.*) \0*.*\0Text File\0*.txt; *.doc\0");
 	
-	CHOOSEFONT FONT; //폰트 선택
-	static COLORREF  fColor; //폰트 색
+	//폰트 관련 변수
+	CHOOSEFONT FONT; 
+	static COLORREF  fColor; 
 	HFONT hFont, OldFont;
 	static LOGFONT LogFont;
 
+	//컬러 변경 관련 변수
 	CHOOSECOLOR COLOR;
 	static COLORREF tmp[16], color;
 	HBRUSH hBrush, OldBrush;
 	int i;
 
+	//원 선택 관련 변수
+	static HMENU hMenu, hSubMenu;
+	int mx, my;
+	static BOOL Select; //원 클릭 했을 때 원의 선택 여부
+	static BOOL Copy;
+	static int x, y;
+
 	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
 	case WM_CREATE: //윈도우 창 시작시 사용
+		hMenu = GetMenu(hwnd);
+		hSubMenu = GetSubMenu(hMenu, 1);
+		Select = FALSE;
+		Copy = FALSE;
+		x = 100;
+		y = 250;
+		return 0;
 		break;
 
 	case WM_PAINT:
+		//복사, 붙이기 활성, 비활성 선택
+		EnableMenuItem(hSubMenu, ID_EDITCOPY, Select ? MF_ENABLED : MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_EDITPASTE, Copy ? MF_ENABLED : MF_GRAYED);
 		hdc = BeginPaint(hwnd, &ps);
 		
 		//폰트 관련 부분
@@ -127,10 +157,33 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		SelectObject(hdc, OldBrush);
 		DeleteObject(hBrush);
 
+		//선택 원
+		if (Select)
+			Rectangle(hdc, x - BSIZE, y - BSIZE, x + BSIZE, y + BSIZE);
+		Ellipse(hdc, x - BSIZE, y - BSIZE, x + BSIZE, y + BSIZE);
+
 		EndPaint(hwnd, &ps);
+		return 0;
+		break;
+
+	case WM_LBUTTONDOWN: //마우스 왼쪽 눌림
+		mx = LOWORD(lParam);
+		my = HIWORD(lParam);
+		if (InCircle(x, y, mx, my))
+		{
+			Select = TRUE;
+		}
+		InvalidateRgn(hwnd, NULL, TRUE);
 		break;
 
 	case WM_COMMAND: //메뉴 항목 선택시 사용
+		if (LOWORD(wParam) == ID_EDITCOPY)
+		{
+			Copy = TRUE;
+			InvalidateRgn(hwnd, NULL, TRUE);
+		}
+		break;
+
 		switch (LOWORD(wParam)) //어떤 메뉴 항목이 선택 되었는지 판단.
 		{
 		case ID_FILENEW: //새 파일
