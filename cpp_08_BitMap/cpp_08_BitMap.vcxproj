@@ -135,6 +135,10 @@
   <ItemGroup>
     <ResourceCompile Include="cpp_08_BitMap.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="bitmap1.bmp" />
+    <Image Include="C:\Users\winqu\Desktop\1111.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
