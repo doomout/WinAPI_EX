@@ -7,6 +7,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 //대화 상자
 BOOL CALLBACK Dlg6_3Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK Dlg6_4Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 HINSTANCE hInst;
 
@@ -66,6 +67,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 //메세지 처리 부분, 콜백 함수 명시
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
+
+
 	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
 	case WM_CREATE: //윈도우 창 시작시 사용
@@ -76,6 +79,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case ID_6_3_MENU:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_3), hwnd, (DLGPROC)&Dlg6_3Proc);
+			break;
+		case ID_6_4_MENU:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_4), hwnd, (DLGPROC)&Dlg6_4Proc);
 			break;
 		}
 		break;
@@ -89,6 +95,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
 
+//6-3 대화 상자
 BOOL CALLBACK Dlg6_3Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HWND hButton;
@@ -118,6 +125,42 @@ BOOL CALLBACK Dlg6_3Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case ID_CLOSE:
+			EndDialog(hDlg, 0);
+			break;
+
+		case IDCANCEL:
+			EndDialog(hDlg, 0);
+			break;
+		}
+		break;
+	}
+	return 0;
+}
+
+//6-4 대화 상자
+BOOL CALLBACK Dlg6_4Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	TCHAR word[100];
+	
+	switch (iMsg)
+	{
+	case WM_INITDIALOG:
+		return 1;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case ID_BUTTON_COPY:
+			GetDlgItemText(hDlg, IDC_EDIT_SOURCE, word, 100); //여기서 받아서 get
+			SetDlgItemText(hDlg, IDC_EDIT_COPY, word); //여기에 그대로 복사 set
+			break;
+
+		case ID_BUTTON_CLEAR:
+			SetDlgItemText(hDlg, IDC_EDIT_SOURCE, _T("")); 
+			SetDlgItemText(hDlg, IDC_EDIT_COPY, _T(""));
+			break;
+
+		case ID_BUTTON_END:
 			EndDialog(hDlg, 0);
 			break;
 
