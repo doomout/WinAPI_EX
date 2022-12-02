@@ -10,6 +10,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg6_3Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg6_4Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg6_5Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK Dlg6_6Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 HINSTANCE hInst;
 
@@ -85,6 +86,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_6_5_MENU:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_5), hwnd, (DLGPROC)&Dlg6_5Proc);
+			break;
+		case ID_6_6_MENU:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_6), hwnd, (DLGPROC)&Dlg6_6Proc);
 			break;
 		}
 		break;
@@ -219,6 +223,49 @@ BOOL CALLBACK Dlg6_5Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemText(hDlg, IDC_EDIT_OUTPUT, output);
 			break;
 		case ID_BUTTON_CLOSE:
+			EndDialog(hDlg, 0);
+			break;
+		case IDCANCEL:
+			EndDialog(hDlg, 0);
+			break;
+		}
+		break;
+	}
+	return 0;
+}
+
+//6-6 대화 상자 (콤보 박스)
+BOOL CALLBACK Dlg6_6Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	static HWND hCombo;
+	static int selection;
+	TCHAR name[20];
+
+	switch (iMsg)
+	{
+	case WM_INITDIALOG:
+		hCombo = GetDlgItem(hDlg, IDC_COMBO_LIST);
+		return 1;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_BUTTON_INSERT:
+			GetDlgItemText(hDlg, IDC_EDIT_NAME, name, 20);
+			if (_tcscmp(name, _T("")))
+				SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)name); //항목을 추가한다.
+			return 0;
+
+		case IDC_BUTTON_DELETE:
+			SendMessage(hCombo, CB_DELETESTRING, selection, 0); //항목 하나를 제거한다.
+			return 0;
+
+		case IDC_COMBO_LIST:
+			if (HIWORD(wParam) == CBN_SELCHANGE)
+				selection = SendMessage(hCombo, CB_GETCURSEL, 0, 0); //선택한 인덱스 번호를 얻는다.
+			break;
+
+		case IDCLOSE:
 			EndDialog(hDlg, 0);
 			break;
 		case IDCANCEL:
