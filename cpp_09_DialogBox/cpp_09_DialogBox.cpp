@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <TCHAR.H>
 #include  "resource.h"
+#include <stdio.h>
 
 //콜백 함수 선언
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -8,6 +9,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
 //대화 상자
 BOOL CALLBACK Dlg6_3Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg6_4Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK Dlg6_5Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 HINSTANCE hInst;
 
@@ -39,10 +41,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 		_T("Window Class Name"),  //윈도우 클래스 이름(유니 코드로 변환 하기 위해 _T 붙임)
 		_T("대화상자"), //윈도우 타이틀 이름(유니 코드로 변환 하기 위해 _T 붙임)
 		WS_OVERLAPPEDWINDOW, //윈도우 스타일(최소, 최대화, 닫기 버튼)
-		CW_USEDEFAULT, //윈도우 위치 x 좌표(기본), 기본을 쓰려면 CW_USEDEFAULT 를 쓴다.
-		CW_USEDEFAULT, //윈도우 위치 y 좌표(기본)
-		CW_USEDEFAULT, //윈도우 가로 크기(기본)
-		CW_USEDEFAULT, //윈도우 세로 크기(기본)
+		600, //윈도우 위치 x 좌표(기본), 기본을 쓰려면 CW_USEDEFAULT 를 쓴다.
+		200, //윈도우 위치 y 좌표(기본)
+		500, //윈도우 가로 크기(기본)
+		300, //윈도우 세로 크기(기본)
 		NULL, //부모 윈도우 핸들
 		NULL, //메뉴 핸들
 		hInstance, //응용 프로그램 인스턴스
@@ -67,8 +69,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLi
 //메세지 처리 부분, 콜백 함수 명시
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-
-
 	switch (iMsg)  //메시지 번호, 처리할 메시지만 case에 나열
 	{
 	case WM_CREATE: //윈도우 창 시작시 사용
@@ -83,6 +83,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case ID_6_4_MENU:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_4), hwnd, (DLGPROC)&Dlg6_4Proc);
 			break;
+		case ID_6_5_MENU:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_5), hwnd, (DLGPROC)&Dlg6_5Proc);
+			break;
 		}
 		break;
 
@@ -95,7 +98,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
 
-//6-3 대화 상자
+//6-3 대화 상자(버튼)
 BOOL CALLBACK Dlg6_3Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	HWND hButton;
@@ -137,7 +140,7 @@ BOOL CALLBACK Dlg6_3Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-//6-4 대화 상자
+//6-4 대화 상자(에디트)
 BOOL CALLBACK Dlg6_4Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
 	TCHAR word[100];
@@ -164,6 +167,60 @@ BOOL CALLBACK Dlg6_4Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			EndDialog(hDlg, 0);
 			break;
 
+		case IDCANCEL:
+			EndDialog(hDlg, 0);
+			break;
+		}
+		break;
+	}
+	return 0;
+}
+
+//6-5 대화 상자 (체크박스, 라디오 버튼)
+BOOL CALLBACK Dlg6_5Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	static int Check[3], Radio;
+	TCHAR hobby[][30] = { _T("독서"), _T("음악감상"), _T("인터넷") };
+	TCHAR sex[][30] = { _T("여자"), _T("남자") };
+	TCHAR output[200];
+
+	switch (iMsg)
+	{
+	case WM_INITDIALOG:
+		CheckRadioButton(hDlg, IDC_RADIO_FEMALE, IDC_RADIO_MALE, IDC_RADIO_FEMALE); //기본으로 여자로 선택
+		return 1;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_CHECK_READING:
+			Check[0] = 1 - Check[0];
+			break;
+
+		case IDC_CHECK_MUSIC:
+			Check[1] = 1 - Check[1];
+			break;
+
+		case IDC_CHECK_INTERNET:
+			Check[2] = 1 - Check[2];
+			break;
+
+		case IDC_RADIO_FEMALE:
+			Radio = 0;
+			break;
+		case IDC_RADIO_MALE:
+			Radio = 1;
+			break;
+		case ID_BUTTON_OUTPUT:
+			_stprintf_s(output, _T("선택한 취미는 %s %s %s 입니다.\r\n") 
+				_T("선택한 성별은 %s입니다."), 
+				Check[0]?hobby[0]:_T(""), Check[1] ? hobby[1] : _T(""), 
+				Check[2] ? hobby[2] : _T(""), sex[Radio]);
+			SetDlgItemText(hDlg, IDC_EDIT_OUTPUT, output);
+			break;
+		case ID_BUTTON_CLOSE:
+			EndDialog(hDlg, 0);
+			break;
 		case IDCANCEL:
 			EndDialog(hDlg, 0);
 			break;
