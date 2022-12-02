@@ -7,6 +7,7 @@
 #define IDD_DIALOG6_5                   106
 #define IDD_DIALOG6_6                   108
 #define IDD_DIALOG6_7                   110
+#define IDD_DIALOG6_8                   112
 #define ID_START                        1001
 #define ID_PAUSE                        1002
 #define ID_CLOSE                        1003
@@ -26,22 +27,30 @@
 #define IDC_EDIT_NAME                   1019
 #define IDC_COMBO_LIST                  1020
 #define IDC_BUTTON_DELETE               1022
+#define IDC_BUTTON_INSERT2              1023
 #define IDC_BUTTON_INSERT               1023
+#define IDC_BUTTON_MODIFY               1024
+#define IDC_BUTTON_INSERT4              1025
 #define IDC_LIST_NAME                   1027
+#define IDC_LIST_MEMBER                 1029
+#define IDC_EDIT_PHONE                  1031
 #define ID_6_3_MENU                     40002
 #define IDD_DIALOG6_4                   40004
 #define ID_6_4_MENU                     40005
 #define ID_6_5_MENU                     40009
 #define ID_6_6_MENU                     40012
+#define ID_40017                        40017
 #define ID_6_7_MENU                     40018
+#define ID_40019                        40019
+#define ID_6_8_MENU                     40020
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        112
-#define _APS_NEXT_COMMAND_VALUE         40019
-#define _APS_NEXT_CONTROL_VALUE         1028
+#define _APS_NEXT_RESOURCE_VALUE        114
+#define _APS_NEXT_COMMAND_VALUE         40021
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -2,6 +2,7 @@
 #include <TCHAR.H>
 #include  "resource.h"
 #include <stdio.h>
+#include <CommCtrl.h>
 
 //콜백 함수 선언
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
@@ -12,6 +13,7 @@ BOOL CALLBACK Dlg6_4Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg6_5Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg6_6Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK Dlg6_7Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK Dlg6_8Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam);
 
 HINSTANCE hInst;
 
@@ -93,6 +95,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_6_7_MENU:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_7), hwnd, (DLGPROC)&Dlg6_7Proc);
+			break;
+		case ID_6_8_MENU:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG6_8), hwnd, (DLGPROC)&Dlg6_8Proc);
 			break;
 		}
 		break;
@@ -323,3 +328,160 @@ BOOL CALLBACK Dlg6_7Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return 0;
 }
+
+//6-8 리스트 컨트롤 기본 설정
+void MakeColumn(HWND hDlg)
+{
+	LPCTSTR name[2] = { _T("이름"), _T("전화번호") };
+	LVCOLUMN lvCol = { 0, };
+	HWND hList;
+	hList = GetDlgItem(hDlg, IDC_LIST_MEMBER);
+	lvCol.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
+	lvCol.fmt = LVCFMT_LEFT;
+
+	for (size_t i = 0; i < 2; i++)
+	{
+		lvCol.cx = 90;
+		lvCol.iSubItem = i;
+		lvCol.pszText = (LPTSTR)name[i];
+		SendMessage(hList, LVM_INSERTCOLUMN, (WPARAM)i, (LPARAM)&lvCol);
+	}
+}
+
+//6-8 리스트 컨트롤 입력 함수
+void InsertData(HWND hDlg)
+{
+	int count;
+	LVITEM item;
+	HWND hList;
+	TCHAR name[20], phone[20];
+
+	GetDlgItemText(hDlg, IDC_EDIT_NAME, name, 20);
+	SetDlgItemText(hDlg, IDC_EDIT_NAME, _T(""));
+
+	if (_tcscmp(name, _T("")) == 0) return;
+
+	GetDlgItemText(hDlg, IDC_EDIT_PHONE, phone, 20);
+	SetDlgItemText(hDlg, IDC_EDIT_PHONE, _T(""));
+
+	hList = GetDlgItem(hDlg, IDC_LIST_MEMBER);
+	count = ListView_GetItemCount(hList);
+	item.mask = LVIF_TEXT;
+	item.iItem = count;
+	item.iSubItem = 0;
+	item.pszText = name;
+	ListView_InsertItem(hList, &item);
+	ListView_SetItemText(hList, count, 1, phone);
+}
+
+//6-9 리스트 컨트롤 선택 함수
+int SelectItem(HWND hDlg, LPARAM lParam)
+{
+	LPNMLISTVIEW nlv;
+	HWND hList;
+	TCHAR name[20], phone[20];
+
+	hList = GetDlgItem(hDlg, IDC_LIST_MEMBER);
+	nlv = (LPNMLISTVIEW)lParam;
+	
+	ListView_GetItemText(hList, nlv->iItem, 0, name, 20);
+	SetDlgItemText(hDlg, IDC_EDIT_NAME, name);
+	
+	ListView_GetItemText(hList, nlv->iItem, 1, phone, 20);
+	SetDlgItemText(hDlg, IDC_EDIT_PHONE, phone);
+
+	return(nlv->iItem);
+}
+
+//6-9 리스트 컨트롤 수정 함수
+void ModifyItem(HWND hDlg, int selection)
+{
+	static HWND hList;
+	TCHAR name[20], phone[20];
+
+	hList = GetDlgItem(hDlg, IDC_LIST_MEMBER);
+	
+	GetDlgItemText(hDlg, IDC_EDIT_NAME, name, 20);
+	GetDlgItemText(hDlg, IDC_EDIT_PHONE, phone, 20);
+	
+	if(_tcscmp(name, _T("")) == 0) return;
+
+	ListView_SetItemText(hList, selection, 0, name);
+	ListView_SetItemText(hList, selection, 1, phone);
+
+	SetDlgItemText(hDlg, IDC_EDIT_NAME, _T(""));
+	SetDlgItemText(hDlg, IDC_EDIT_PHONE, _T(""));
+
+	return;
+}
+
+//6-9 리스트 컨트롤 삭제 함수
+void DeleteItem(HWND hDlg, int selection)
+{
+	static HWND hList;
+
+	hList = GetDlgItem(hDlg, IDC_LIST_MEMBER);
+	ListView_DeleteItem(hList, selection);
+
+	SetDlgItemText(hDlg, IDC_EDIT_NAME, _T(""));
+	SetDlgItemText(hDlg, IDC_EDIT_PHONE, _T(""));
+
+	return;
+}
+
+#define UNSELECTED -1
+//6-8 대화 상자 (리스트 컨트롤)
+//vs 2022 버전 기준으로 에러가 나는데
+//속성 ->c/c++ -> 언어 -> 준수모드 -> 아니요 선택해야 한다.
+BOOL CALLBACK Dlg6_8Proc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
+{
+	LPNMHDR hdr;
+	HWND hList;
+	static int selection;
+
+	switch (iMsg)
+	{
+	case WM_INITDIALOG:
+		selection = UNSELECTED;
+		MakeColumn(hDlg);
+		return 1;
+
+	case WM_NOTIFY:
+		hdr = (LPNMHDR)lParam;
+		hList = GetDlgItem(hDlg, IDC_LIST_MEMBER);
+		if (hdr->hwndFrom == hList && hdr->code == LVN_ITEMCHANGING)
+			selection = SelectItem(hDlg, lParam);
+		return 1;
+	
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDC_BUTTON_INSERT:
+			InsertData(hDlg);
+			return 0;
+
+		case IDC_BUTTON_MODIFY:
+			if (selection == UNSELECTED) break;
+			ModifyItem(hDlg, selection);
+			selection = UNSELECTED;
+			return 0;
+
+		case IDC_BUTTON_DELETE:
+			if (selection == UNSELECTED) break;
+			DeleteItem(hDlg, selection);
+			selection = UNSELECTED;
+			return 0;
+		case IDCLOSE:
+			DestroyWindow(hDlg);
+			hDlg = NULL;
+			return 0;
+
+		case IDCANCEL:
+			EndDialog(hDlg, 0);
+			break;
+		}
+		break;
+	}
+	return 0;
+}
+
