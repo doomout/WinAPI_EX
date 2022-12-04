@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_08_BitMap", "cpp_08_Bit
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_09_DialogBox", "cpp_09_DialogBox\cpp_09_DialogBox.vcxproj", "{7566A9E8-AD0A-4457-B290-4F0C0E28CC89}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpp_10_MDI", "cpp_10_MDI\cpp_10_MDI.vcxproj", "{6B45A903-93F7-4AED-B4AB-90DD18672881}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -101,6 +103,14 @@ Global
 		{7566A9E8-AD0A-4457-B290-4F0C0E28CC89}.Release|x64.Build.0 = Release|x64
 		{7566A9E8-AD0A-4457-B290-4F0C0E28CC89}.Release|x86.ActiveCfg = Release|Win32
 		{7566A9E8-AD0A-4457-B290-4F0C0E28CC89}.Release|x86.Build.0 = Release|Win32
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Debug|x64.ActiveCfg = Debug|x64
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Debug|x64.Build.0 = Debug|x64
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Debug|x86.ActiveCfg = Debug|Win32
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Debug|x86.Build.0 = Debug|Win32
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Release|x64.ActiveCfg = Release|x64
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Release|x64.Build.0 = Release|x64
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Release|x86.ActiveCfg = Release|Win32
+		{6B45A903-93F7-4AED-B4AB-90DD18672881}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
