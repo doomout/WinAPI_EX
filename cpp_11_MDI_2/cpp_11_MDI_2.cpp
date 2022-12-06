@@ -73,6 +73,8 @@ LRESULT CALLBACK FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 {
 	RECT rectView;
 	static BOOL split;
+	static HCURSOR hCursor; //마우스 커서 모양을 변경하기 위한 핸들 타입
+	static int boundary = -1; //자식 윈도우 사이의 경계선의 Y좌표 값 저장
 
 	switch (iMsg)
 	{
@@ -84,7 +86,8 @@ LRESULT CALLBACK FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 		switch (LOWORD(wParam))
 		{
 		case ID_SPLIT_2x1:
-			if (split == TRUE) break;
+			if (split == TRUE) break; //?
+			split = TRUE; //WM_MOUSEMOVE 조건을 맞추기 위해 true로 전환
 			GetClientRect(hwnd, &rectView);
 			ChildHwnd[0] = CreateWindowEx(
 				WS_EX_CLIENTEDGE,  // 경계가 약간 들어간 입체 형태
@@ -115,26 +118,45 @@ LRESULT CALLBACK FrameWndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam
 				hInst,
 				NULL
 			);
+			boundary = rectView.bottom / 2;
+			hCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_SIZENS)); //윈도우 크기 조정용 커서
 			return 0;
 
-		case ID_EXIT:
+		case ID_EXIT: //끝내기 
 			PostQuitMessage(0);
 			return 0;
 		}
 		return 0;
-		
-		case WM_SIZE:
-			if (split == TRUE)
-			{
-				GetClientRect(hwnd, &rectView);
-				MoveWindow(ChildHwnd[0], 0, 0, rectView.right, rectView.bottom/2-1, TRUE);
-				MoveWindow(ChildHwnd[1], 0, rectView.bottom/2+1, rectView.right, rectView.bottom/2-1, TRUE);
-			}
-			return 0;
 
-		case WM_DESTROY: //끝내기
-			PostQuitMessage(0);
-			return 0;		
+	case WM_MOUSEMOVE:
+		if (HIWORD(lParam) >= boundary - 2 && HIWORD(lParam) <= boundary + 2)
+			SetCursor(hCursor);
+		if (wParam == MK_LBUTTON && split == TRUE) 
+		{
+			GetClientRect(hwnd, &rectView);
+			if (rectView.top + 5 < HIWORD(lParam) && HIWORD(lParam) < rectView.bottom - 5)
+				boundary = HIWORD(lParam);
+			MoveWindow(ChildHwnd[0], 0, 0, rectView.right, boundary - 1, TRUE);
+			MoveWindow(ChildHwnd[1], 0, boundary + 1, rectView.right, rectView.bottom - boundary + 1, TRUE);
+		}
+		return 0;
+
+	case WM_LBUTTONDOWN: //마우스 버튼 누르는 동안
+		if (split == TRUE)
+		{
+			SetCursor(hCursor);
+			SetCapture(hwnd);
+		}
+		return 0;
+
+	case WM_LBUTTONUP: //마우스 버튼 업
+		if (split == TRUE)
+			ReleaseCapture();
+		return 0;
+
+	case WM_DESTROY: //응용프로그램 종료
+		PostQuitMessage(0);
+		return 0;		
 	}
 	return DefWindowProc(hwnd, iMsg, wParam, lParam);
 }
